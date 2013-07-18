@@ -1,0 +1,9 @@
+<html>
+    <head>
+    </head>
+    <body>
+        {% for topic in topics %}
+            <a href="{% url 'topic' topic.pk %}">{{ topic.title }}</a>
+        {% endfor %}
+    </body>
+</html>

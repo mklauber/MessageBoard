@@ -1,0 +1,5 @@
+# Do not track databases
+*.db
+
+# Do not track compiled files
+*.pyc

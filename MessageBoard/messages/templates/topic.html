@@ -1,0 +1,135 @@
+<html>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <script src="jquery.scrollTo.js"></script>
+        <style>
+            html {
+               overflow: -moz-scrollbars-vertical; 
+               overflow-y: scroll;
+               postion: fixed;
+            }
+            #body {
+                width: 700px ;
+                margin-left: auto ;
+                margin-right: auto ;
+                background-color: #4F56BA;
+                padding: 10px;
+                min-height: 100%;
+            }
+            .container {
+                width: 500px ;
+                margin-left: auto ;
+                margin-right: auto ;
+                position: relative;
+            }
+            .message { 
+                background-color:#C8AD66;
+                border:solid black 1px;
+                padding-bottom:8px;
+                margin-bottom:-8px;
+            }
+            .left-col { 
+                float: left;
+                width: 150px;
+            }
+            .content { 
+                margin-left:150px; 
+                margin-right: 15px;
+            }
+            .right {
+                position:absolute;
+                right: 9px;
+                color: #888;
+                border-left: solid 1px #000;
+                
+                
+
+                margin-right: -8px;
+                padding-right: 8px;
+                padding-left: 3px;
+            }
+            
+            .top {
+                position: absolute;
+                border-bottom: solid 1px #000;
+                margin-top: -8px;
+                top: 9px;
+            }
+            
+            .bottom {
+                position: absolute;
+                border-top: solid 1px #000;
+                padding-bottom: 3px;
+                bottom: 0px;
+            }
+            
+            .focus .right {
+                color: #555;
+                border-color: #888;
+            }
+            
+            .ancestors > div {
+                background-color:#E9DAB3;
+                margin-bottom: -10px;
+            }
+            .children > div {
+                background-color:#E9D298;
+                margin-bottom: -10px;
+            }
+            
+            .focus:not(:first-child) {
+                margin-top:20px;
+            }   
+            
+            .focus:not(:last-child) {
+                margin-bottom: 20px;
+            }
+            
+            .comment {
+                min-height: 50px; 
+                padding: 8px;
+                border:solid black 1px;
+                overflow:hidden;
+                position: relative;
+                
+                -webkit-border-top-left-radius: 8px;
+                -webkit-border-top-right-radius: 8px;
+                -moz-border-radius-topleft: 8px;
+                -moz-border-radius-topright: 8px;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+        </style>
+        <script>
+            
+            $(document).ready(function () {            
+                // Setup handlers for 'messages', e.g. showing a message's h.
+                $(".comment").click( function () {
+                    
+                    // Determine who is the focus
+                    id = "#"+$(this).attr('data-message');
+                    
+                    // Hide not focused selectors
+                    $('.container').not(id).removeClass('focus', 500);
+                    $(".collapsible" ).not(id+" > .collapsible").slideUp();
+                    
+                    // Toggle selected container
+                    $(id).children(".collapsible").slideToggle();
+                    $(id).toggleClass('focus', 500);
+                    
+                    $.scrollTo(id, 500, {offset: {top: -50}});
+                    
+                });
+            });
+            
+        </script>
+    </head>
+    <body>
+        <div id="body">
+            {% for message in messages %}
+                {% include 'message.tmpl' %}
+            {% endfor %}
+        </div>
+    </body>
+</html>
