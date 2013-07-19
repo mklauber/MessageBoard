@@ -16,5 +16,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', index, name="index"),
     url(r'^topic/(?P<topic_id>\d+)/$', topic, name="topic"),
-    
+
 )

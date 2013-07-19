@@ -1,28 +1,15 @@
 <div id="{{message.pk}}" class="container">
-                <div class="collapsible ancestors" style="display:none;">
-                    {% for ancestor in message.get_ancestors %}
-                    <div class="comment" data-message="{{ ancestor.pk }}">
-                        <div class="left-col">{{ ancestor.user }}</div>
-                        <div class="top right">{{ message.pk }}</div>
-                        <div class="bottom right">Reply</div>
-                        <div class="content"">{{ ancestor.text }}</div>
-                    </div>
-                    {% endfor %}
-                </div>  
-                <div class="message comment" data-message="{{message.pk}}">
-                    <div class="left-col">{{ message.user }}</div>
-                    <div class="top right"> #{{message.pk}} </div> 
-                    <div class="bottom right">Reply</div>
-                    <div class="content">{{ message.text }}</div>
-                </div>
-                <div class="collapsible children" style="display:none;">
-                    {% for child in message.children.all %}
-                    <div class="comment" data-message="{{ child.pk }}">
-                        <div class="left-col">{{ child.user }}</div>
-                        <div class="top right"> #{{ child.pk }} </div>
-                        <div class="bottom right">Reply</div>
-                        <div class="content">{{ child.text }}</div>
-                    </div>
-                    {% endfor %}
-                </div>  
-            </div>
+    <div class="collapsible ancestors" style="display:none;">
+       {% for message in message.get_ancestors %}
+        {% include 'comment.tmpl' %}
+       {% endfor %}
+    </div>  
+    <div class="message">
+       {% include 'comment.tmpl' %}
+	</div>
+   <div class="collapsible children" style="display:none;">
+        {% for message in message.children.all %}
+            {% include 'comment.tmpl' %}
+        {% endfor %}
+    </div>  
+</div>
