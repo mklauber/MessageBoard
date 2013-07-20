@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from messages.views import index, topic
+from messages.views import ancestors, children, index, topic
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -16,5 +16,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', index, name="index"),
     url(r'^topic/(?P<topic_id>\d+)/$', topic, name="topic"),
-
+    url(r'^ajax/ancestors/(?P<message_id>\d+)/$', ancestors, name="ancestors"),
+    url(r'^ajax/children/(?P<message_id>\d+)/$', children, name="children"),
 )

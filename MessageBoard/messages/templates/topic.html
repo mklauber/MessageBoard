@@ -87,11 +87,6 @@
                 padding-bottom: 5px;
                 bottom: 0px;
             }
-            
-            .focus .right {
-                color: #555;
-                border-color: #888;
-            }
             .focus:not(:first-child) {
                 margin-top:20px;
             }
@@ -102,56 +97,51 @@
             
         </style>
         <script>
-            
             $(document).ready(function () {            
                 // Setup handlers for 'messages', e.g. showing a message's h.
-                $(".comment").click( function (event) {
-                    event.stopPropagation()
+                $(document).on( "click", ".comment", function (event) {
+                    // Determine who is the focus 
+                    pk = $(this).attr('data-message');
+                    id = "#"+pk;
                     
-                    // Determine who is the focus
-                    id = "#"+$(this).attr('data-message');
+                    // Create a deferred to tell once we've loaded the data 
+                    var loaded = $.Deferred();
                     
-                    // Hide not focused selectors
-                    $('.container').not(id).removeClass('focus', 500);
-                    $(".collapsible" ).not(id+" > .collapsible").slideUp();
-                    
-                    // Toggle selected container
-                    $(id).children(".collapsible").not('.reply').slideToggle();
-                    $(id).toggleClass('focus', 500);
-                    
-                    $.scrollTo(id, 500, {offset: {top: -50}});
-                    
-                });
-                
-                //Setup handlers for 'reply', e.g. show reply form.
-                $(".reply").click( function( event) {
-                	event.stopPropagation();
-                	
-                    // Determine who is the focus
-                    id = "#"+$(this).attr('data-message');
-                    
-                    // Set parent value 
-                    $('#id_parent').val( $(this).attr('data-message'));
+                    // Look to see if we've loaded data before 
+                    if ( $(id).attr('data-loaded') )
+                        // If so, resolve the loaded deferred immediately.
+                        loaded.resolve();
+                    else {
+                        // Create deferreds for the load function calls
+                        // Note: (why is an ajax call a deferred, but a load call not?) 
+                        var ancestors = $.Deferred();
+                        var children  = $.Deferred();
 
-                    // Hide not focused selectors 
-                    $('.container').not(id).removeClass('focus', 500);
-                    $(".collapsible" ).slideUp();
+                        // Load the ancestor and child data behind the scenes 
+                        $(id).children('.ancestors').load('/ajax/ancestors/'+pk+'/', function() { 
+                            ancestors.resolve(); });
+                        $(id).children('.children').load('/ajax/children/'+pk+'/', function () {
+                            children.resolve(); });
+                        
+                        // Once we've got the required data 
+                        $.when( ancestors, children ).done( function () { 
+                            //set the attr to prevent reloading data 
+                            $(id).attr('data-loaded', true);
+                            loaded.resolve();   // And notify that we're ready    
+                        });
+                    }
                     
-                    // Slide in reply context 
-                    $('#reply>.ancestors').hide().html($(id+" > .ancestors").children().clone() ).slideDown();
-                    $('#reply>.message').hide().html($(id+" > .message").children().clone() ).slideDown();
-                    $('#reply>.siblings').hide().html($(id+" > .children").children().clone() ).slideDown();
-                    $('#reply .reply').remove();
-                });
-                
-                
-                $("#reply > .comment").click( function (event) {
-                    event.stopPropagation();
-                    $('#id_parent').removeAttr('value');
-                    
-                    $('#reply>.ancestors').slideUp();
-                    $('#reply>.message').slideUp();
-                    $('#reply>.siblings').slideUp();
+                    // Wait until we've loaded the background data
+                    $.when( loaded ).done( function () {
+                        // Hide not focused comments 
+                        $('.container').not(id).removeClass('focus', 500);
+                        $(".collapsible" ).not(id+" > .collapsible").slideUp();
+                        
+                        // Focus, toggle and scroll to the selected comment
+                        $(id).toggleClass('focus', 500);
+                        $(id).children(".collapsible").slideToggle();
+                        $.scrollTo(id, 500, {offset: {top: -50}});
+                    });
                 });
             });
             
@@ -162,23 +152,6 @@
             {% for message in messages %}
                 {% include 'message.tmpl' %}
             {% endfor %}
-            <br />
-            <div id="reply" class="container">
-                <div class="ancestors">
-                </div>
-                <div class="message">
-                </div>
-                <div class="comment" style="background-color: #A88D46">
-                    <h2 class="top right">Reply</h2>
-                    <form>
-                        {{ reply_form.text }}
-                        {{ reply_form.parent.as_hidden }}
-                        <input type="submit">Submit</input>
-                    </form>
-                </div>
-                <div class="siblings">
-                </div>
-            </div>
         </div>
     </body>
 </html>
